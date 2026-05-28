@@ -9,13 +9,18 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
-  entries:
+  entries-and-site:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
           python-version: '3.x'
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
       - run: python scripts/validate-entry.py
       - run: python scripts/build-index.py
       - run: git diff --exit-code dictionary/index.md
+      - run: bun install --frozen-lockfile
+      - run: bun run build

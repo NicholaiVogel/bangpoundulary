@@ -1,0 +1,23 @@
+{
+  "name": "bangpoundulary",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "deploy": "bun run build && wrangler pages deploy ./dist --project-name bangpoundulary --branch main",
+    "validate": "python scripts/validate-entry.py && python scripts/build-index.py && astro check"
+  },
+  "dependencies": {
+    "@astrojs/check": "latest",
+    "@astrojs/sitemap": "latest",
+    "astro": "latest",
+    "fuse.js": "latest",
+    "typescript": "latest"
+  },
+  "devDependencies": {
+    "wrangler": "latest"
+  }
+}

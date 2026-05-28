@@ -1,0 +1,68 @@
+---
+import type { BangEntry } from '../lib/entries';
+const entries = Astro.props.entries as BangEntry[];
+---
+<section class="search-panel" data-search-root>
+  <div class="search-topline">Search the official record</div>
+  <label class="search-label" for="bang-search">Find a wombo by word, root, status, author, or sacrificial evidence</label>
+  <input id="bang-search" class="search-input" type="search" autocomplete="off" placeholder="try: kirk, quiche, deprecated, sacrifice..." />
+  <div class="filters" aria-label="Status filters">
+    <button data-status="all" class="active">All</button>
+    <button data-status="valid">Valid</button>
+    <button data-status="codified">Codified</button>
+    <button data-status="deprecated">Deprecated</button>
+    <button data-status="variant">Variants</button>
+  </div>
+  <div class="result-count"><span data-count>{entries.length}</span> records admitted</div>
+  <div class="results" data-results>
+    {entries.slice(0, 24).map((entry) => (
+      <a class="result-card" href={`/entries/${entry.slug}/`} data-status={entry.status}>
+        <span class={`status status-${entry.status}`}>{entry.status}</span>
+        <h3>{entry.word}</h3>
+        <p>{entry.definition}</p>
+        <small>{entry.roots.join(' + ')}</small>
+      </a>
+    ))}
+  </div>
+</section>
+<script define:vars={{ entries }}>
+  const root = document.querySelector('[data-search-root]');
+  const input = root?.querySelector('#bang-search');
+  const results = root?.querySelector('[data-results]');
+  const count = root?.querySelector('[data-count]');
+  const buttons = Array.from(root?.querySelectorAll('[data-status]') ?? []);
+  let activeStatus = 'all';
+
+  const normalize = (value) => String(value ?? '').toLowerCase();
+  const score = (entry, query) => {
+    if (!query) return 1;
+    const haystack = normalize([entry.word, entry.status, entry.author, entry.source, entry.definition, entry.roots?.join(' '), entry.sacrifice].join(' '));
+    if (normalize(entry.word).startsWith(query)) return 100;
+    if (normalize(entry.word).includes(query)) return 75;
+    return haystack.includes(query) ? 25 : 0;
+  };
+  const render = () => {
+    const q = normalize(input?.value).trim();
+    const filtered = entries
+      .map((entry) => ({ entry, score: score(entry, q) }))
+      .filter(({ entry, score }) => score > 0 && (activeStatus === 'all' || entry.status === activeStatus))
+      .sort((a, b) => b.score - a.score || a.entry.word.localeCompare(b.entry.word))
+      .slice(0, 60);
+    if (count) count.textContent = String(filtered.length);
+    if (!results) return;
+    results.innerHTML = filtered.map(({ entry }) => `
+      <a class="result-card" href="/entries/${entry.slug}/" data-status="${entry.status}">
+        <span class="status status-${entry.status}">${entry.status}</span>
+        <h3>${entry.word}</h3>
+        <p>${entry.definition}</p>
+        <small>${(entry.roots || []).join(' + ')}</small>
+      </a>
+    `).join('') || '<p class="empty-record">No admissible record found. The court invites new evidence.</p>';
+  };
+  input?.addEventListener('input', render);
+  buttons.forEach((button) => button.addEventListener('click', () => {
+    activeStatus = button.dataset.status;
+    buttons.forEach((b) => b.classList.toggle('active', b === button));
+    render();
+  }));
+</script>

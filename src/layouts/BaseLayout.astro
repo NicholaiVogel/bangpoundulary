@@ -1,0 +1,32 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import '../styles/global.css';
+interface Props { title?: string; description?: string; }
+---
+<html lang="en">
+  <head>
+    <BaseHead title={Astro.props.title} description={Astro.props.description} />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="site-header">
+        <a class="seal" href="/" aria-label="Bangpoundulary home">
+          <span class="seal-mark">B</span>
+          <span><strong>Bangpoundulary</strong><small>Office of Wombological Records</small></span>
+        </a>
+        <nav>
+          <a href="/entries/">Entries</a>
+          <a href="/law/">Law</a>
+          <a href="/corpus/">Corpus</a>
+          <a href="/about/">About</a>
+          <a href="https://github.com/NicholaiVogel/bangpoundulary">GitHub</a>
+        </nav>
+      </header>
+      <main><slot /></main>
+      <footer class="site-footer">
+        <p>The Bangpoundulary is a public record of valid wombos, invalid appeals, and load-bearing idiocy.</p>
+        <p><a href="https://github.com/NicholaiVogel/bangpoundulary">Source on GitHub</a></p>
+      </footer>
+    </div>
+  </body>
+</html>

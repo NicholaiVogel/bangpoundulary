@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getEntries, getEntry } from '../../lib/entries';
+import { markdownBlocks } from '../../lib/markdown';
+export function getStaticPaths() {
+  return getEntries().map((entry) => ({ params: { slug: entry.slug } }));
+}
+const entry = getEntry(Astro.params.slug!);
+if (!entry) return Astro.redirect('/entries/');
+---
+<BaseLayout title={entry.word} description={entry.definition}>
+  <article class="entry-page official-card">
+    <a class="back-link" href="/entries/">← Back to entries</a>
+    <header class="entry-header">
+      <span class={`status status-${entry.status}`}>{entry.status}</span>
+      <h1>{entry.word}</h1>
+      <p class="definition">{entry.definition}</p>
+    </header>
+    <section class="filing-grid">
+      <div><strong>Roots</strong><span>{entry.roots.join(' + ') || 'Under review'}</span></div>
+      <div><strong>Author</strong><span>{entry.author || 'Unknown'}</span></div>
+      <div><strong>Entry</strong><span>{entry.entry || 'Unnumbered'}</span></div>
+      <div><strong>Source</strong><span>{entry.source || 'No source recorded'}</span></div>
+    </section>
+    <section>
+      <h2>Sacrifice</h2>
+      <div class="prose" set:html={markdownBlocks(entry.sacrifice || 'No explicit sacrifice analysis was recorded. The court invites review.')} />
+    </section>
+    <section>
+      <h2>Law</h2>
+      <div class="prose" set:html={markdownBlocks(entry.law || 'No ruling recorded.')} />
+    </section>
+    {entry.original && (
+      <section>
+        <h2>Original corpus block</h2>
+        <pre class="corpus-block">{entry.original.replace(/^```markdown\n?/, '').replace(/```$/, '').trim()}</pre>
+      </section>
+    )}
+  </article>
+</BaseLayout>

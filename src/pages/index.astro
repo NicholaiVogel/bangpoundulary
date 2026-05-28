@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchBox from '../components/SearchBox.astro';
+import { getEntries } from '../lib/entries';
+const entries = getEntries();
+const counts = entries.reduce((acc, entry) => {
+  acc[entry.status] = (acc[entry.status] ?? 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+const random = entries[Math.floor(entries.length / 2)];
+---
+<BaseLayout description="The official dictionary of valid wombos, linguistic sacrifice, and court-admissible nonsense.">
+  <section class="hero official-card">
+    <p class="eyebrow">Bangpoundulary.com · Department of Applied Wombology</p>
+    <h1>The official dictionary of words that had no business surviving.</h1>
+    <p class="lede">A searchable public record of valid wombos, linguistic sacrifices, deprecated appeals, variants, and court-admissible nonsense.</p>
+    <div class="hero-actions">
+      <a class="button primary" href="/entries/">Browse the record</a>
+      <a class="button" href="/law/">Read Wombo Law</a>
+    </div>
+    <dl class="docket-grid">
+      <div><dt>{entries.length}</dt><dd>admitted records</dd></div>
+      <div><dt>{counts.valid ?? 0}</dt><dd>valid findings</dd></div>
+      <div><dt>{counts.deprecated ?? 0}</dt><dd>deprecated forms</dd></div>
+      <div><dt>{counts.variant ?? 0}</dt><dd>recognized variants</dd></div>
+    </dl>
+  </section>
+  <SearchBox entries={entries} />
+  <section class="two-col">
+    <article class="official-card">
+      <p class="eyebrow">Wombo Law #1</p>
+      <h2>No sacrifice, no wombo.</h2>
+      <p>A wombo is not a concatenation. It is a merger. Each root must surrender a syllable, a meaning, or a boundary to create something that neither word could be alone.</p>
+      <a href="/law/">View the governing statute</a>
+    </article>
+    <article class="official-card specimen">
+      <p class="eyebrow">Specimen record</p>
+      <h2>{random.word}</h2>
+      <p>{random.definition}</p>
+      <a href={`/entries/${random.slug}/`}>Inspect the filing</a>
+    </article>
+  </section>
+</BaseLayout>

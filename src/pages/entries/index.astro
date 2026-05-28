@@ -1,0 +1,14 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import SearchBox from '../../components/SearchBox.astro';
+import { getEntries } from '../../lib/entries';
+const entries = getEntries();
+---
+<BaseLayout title="Entries" description="Browse every admitted Bangpoundulary record.">
+  <section class="page-heading official-card">
+    <p class="eyebrow">Dictionary docket</p>
+    <h1>Entries</h1>
+    <p>{entries.length} wombological records admitted into the public index.</p>
+  </section>
+  <SearchBox entries={entries} />
+</BaseLayout>

@@ -1,0 +1,23 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import fs from 'node:fs';
+import path from 'node:path';
+const corpusDir = path.join(process.cwd(), 'corpus');
+const files = fs.existsSync(corpusDir) ? fs.readdirSync(corpusDir).filter((file) => file.endsWith('.md')).sort() : [];
+---
+<BaseLayout title="Corpus" description="Source snapshots admitted into the Bangpoundulary record.">
+  <section class="page-heading official-card">
+    <p class="eyebrow">Source record</p>
+    <h1>Corpus</h1>
+    <p>Imported compendia and snapshots. These preserve source texture before entries become neat little filings.</p>
+  </section>
+  <section class="corpus-list">
+    {files.map((file) => (
+      <article class="official-card">
+        <h2>{file}</h2>
+        <p>Markdown source snapshot preserved in <code>corpus/{file}</code>.</p>
+        <a href={`https://github.com/NicholaiVogel/bangpoundulary/blob/main/corpus/${file}`}>View source on GitHub</a>
+      </article>
+    ))}
+  </section>
+</BaseLayout>

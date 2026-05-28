@@ -1,0 +1,18 @@
+---
+interface Props { title?: string; description?: string; }
+const title = Astro.props.title ? `${Astro.props.title} · Bangpoundulary` : 'Bangpoundulary';
+const description = Astro.props.description ?? 'The official dictionary of valid wombos, linguistic sacrifice, and court-admissible nonsense.';
+---
+<title>{title}</title>
+<meta charset="utf-8" />
+<meta name="description" content={description} />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content="website" />
+<meta property="og:url" content={Astro.url.href} />
+<meta name="twitter:card" content="summary_large_image" />
+<link rel="icon" href="/favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Besley:ital,wght@0,400..900;1,400..900&family=Newsreader:opsz,wght@6..72,300..800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
