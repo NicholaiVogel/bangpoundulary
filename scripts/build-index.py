@@ -19,7 +19,7 @@ def parse_frontmatter(text: str) -> dict[str, str | list[str]]:
         if line.startswith("  - ") and current_key:
             data.setdefault(current_key, [])
             assert isinstance(data[current_key], list)
-            data[current_key].append(line[4:].strip())
+            data[current_key].append(line[4:].strip().strip('\"'))
             continue
         match = re.match(r"^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$", line)
         if not match:
