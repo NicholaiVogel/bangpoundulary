@@ -1,11 +1,15 @@
 ---
 import type { BangEntry } from '../lib/entries';
 const entries = Astro.props.entries as BangEntry[];
+const compact = Boolean(Astro.props.compact);
 ---
-<section class="search-panel" data-search-root>
-  <div class="search-topline">Search the official record</div>
-  <label class="search-label" for="bang-search">Find a wombo by word, root, status, author, or sacrificial evidence</label>
-  <input id="bang-search" class="search-input" type="search" autocomplete="off" placeholder="try: kirk, quiche, deprecated, sacrifice..." />
+<section class:list={["search-panel", compact && "search-panel-compact"]} data-search-root>
+  {!compact && <p class="section-kicker">Search the official record</p>}
+  <div class="search-row">
+    <span class="search-icon" aria-hidden="true">⌕</span>
+    <input id="bang-search" class="search-input" type="search" autocomplete="off" placeholder="Search wombos, roots, categories..." aria-label="Search wombos" />
+    <button class="search-button" type="button">Search</button>
+  </div>
   <div class="filters" aria-label="Status filters">
     <button data-status="all" class="active">All</button>
     <button data-status="valid">Valid</button>
@@ -15,22 +19,23 @@ const entries = Astro.props.entries as BangEntry[];
   </div>
   <div class="result-count"><span data-count>{entries.length}</span> records admitted</div>
   <div class="results" data-results>
-    {entries.slice(0, 24).map((entry) => (
-      <a class="result-card" href={`/entries/${entry.slug}/`} data-status={entry.status}>
-        <span class={`status status-${entry.status}`}>{entry.status}</span>
+    {entries.slice(0, compact ? 8 : 24).map((entry) => (
+      <a class="wombo-card" href={`/entries/${entry.slug}/`} data-status={entry.status}>
+        <div class="card-topline"><span class={`pill pill-${entry.status}`}>{entry.status}</span><span class="bookmark">♡</span></div>
         <h3>{entry.word}</h3>
+        <p class="pronunciation">/{entry.slug.replaceAll('-', '·')}/ · {entry.roots.join(' + ')}</p>
         <p>{entry.definition}</p>
-        <small>{entry.roots.join(' + ')}</small>
       </a>
     ))}
   </div>
 </section>
-<script define:vars={{ entries }}>
+<script define:vars={{ entries, compact }}>
   const root = document.querySelector('[data-search-root]');
   const input = root?.querySelector('#bang-search');
   const results = root?.querySelector('[data-results]');
   const count = root?.querySelector('[data-count]');
   const buttons = Array.from(root?.querySelectorAll('[data-status]') ?? []);
+  const searchButton = root?.querySelector('.search-button');
   let activeStatus = 'all';
 
   const normalize = (value) => String(value ?? '').toLowerCase();
@@ -41,25 +46,26 @@ const entries = Astro.props.entries as BangEntry[];
     if (normalize(entry.word).includes(query)) return 75;
     return haystack.includes(query) ? 25 : 0;
   };
+  const card = (entry) => `
+    <a class="wombo-card" href="/entries/${entry.slug}/" data-status="${entry.status}">
+      <div class="card-topline"><span class="pill pill-${entry.status}">${entry.status}</span><span class="bookmark">♡</span></div>
+      <h3>${entry.word}</h3>
+      <p class="pronunciation">/${entry.slug.replaceAll('-', '·')}/ · ${(entry.roots || []).join(' + ')}</p>
+      <p>${entry.definition}</p>
+    </a>`;
   const render = () => {
     const q = normalize(input?.value).trim();
     const filtered = entries
       .map((entry) => ({ entry, score: score(entry, q) }))
       .filter(({ entry, score }) => score > 0 && (activeStatus === 'all' || entry.status === activeStatus))
       .sort((a, b) => b.score - a.score || a.entry.word.localeCompare(b.entry.word))
-      .slice(0, 60);
+      .slice(0, compact ? 12 : 72);
     if (count) count.textContent = String(filtered.length);
     if (!results) return;
-    results.innerHTML = filtered.map(({ entry }) => `
-      <a class="result-card" href="/entries/${entry.slug}/" data-status="${entry.status}">
-        <span class="status status-${entry.status}">${entry.status}</span>
-        <h3>${entry.word}</h3>
-        <p>${entry.definition}</p>
-        <small>${(entry.roots || []).join(' + ')}</small>
-      </a>
-    `).join('') || '<p class="empty-record">No admissible record found. The court invites new evidence.</p>';
+    results.innerHTML = filtered.map(({ entry }) => card(entry)).join('') || '<p class="empty-record">No admissible record found. The court invites new evidence.</p>';
   };
   input?.addEventListener('input', render);
+  searchButton?.addEventListener('click', render);
   buttons.forEach((button) => button.addEventListener('click', () => {
     activeStatus = button.dataset.status;
     buttons.forEach((b) => b.classList.toggle('active', b === button));

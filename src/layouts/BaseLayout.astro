@@ -2,31 +2,50 @@
 import BaseHead from '../components/BaseHead.astro';
 import '../styles/global.css';
 interface Props { title?: string; description?: string; }
+const path = Astro.url.pathname;
 ---
 <html lang="en">
   <head>
     <BaseHead title={Astro.props.title} description={Astro.props.description} />
   </head>
   <body>
-    <div class="page-shell">
-      <header class="site-header">
-        <a class="seal" href="/" aria-label="Bangpoundulary home">
-          <span class="seal-mark">B</span>
-          <span><strong>Bangpoundulary</strong><small>Office of Wombological Records</small></span>
-        </a>
-        <nav>
-          <a href="/entries/">Entries</a>
-          <a href="/law/">Law</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Bangpoundulary home">
+        <img class="brand-logo" src="/assets/bangpoundulary-logo.png" alt="" />
+        <span class="brand-text">bangpoundulary.com</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a class={path === '/' ? 'active' : ''} href="/">Home</a>
+        <a class={path.startsWith('/entries') ? 'active' : ''} href="/entries/">Browse Wombos</a>
+        <a class={path.startsWith('/categories') ? 'active' : ''} href="/categories/">Categories</a>
+        <a href="https://github.com/NicholaiVogel/bangpoundulary/issues/new">Submit a Wombo</a>
+        <a class={path.startsWith('/about') ? 'active' : ''} href="/about/">About</a>
+      </nav>
+    </header>
+    <main><slot /></main>
+    <footer class="site-footer">
+      <div>
+        <a class="footer-brand" href="/"><img class="brand-logo" src="/assets/bangpoundulary-logo.png" alt="" /><span>bangpoundulary.com</span></a>
+        <p>The official dictionary of wombos, maintained by the Office of Wombological Records.</p>
+      </div>
+      <div class="footer-grid">
+        <section>
+          <h2>Explore</h2>
+          <a href="/entries/">Browse Wombos</a>
+          <a href="/law/">Wombo Law</a>
           <a href="/corpus/">Corpus</a>
-          <a href="/about/">About</a>
+        </section>
+        <section>
+          <h2>Contribute</h2>
           <a href="https://github.com/NicholaiVogel/bangpoundulary">GitHub</a>
-        </nav>
-      </header>
-      <main><slot /></main>
-      <footer class="site-footer">
-        <p>The Bangpoundulary is a public record of valid wombos, invalid appeals, and load-bearing idiocy.</p>
-        <p><a href="https://github.com/NicholaiVogel/bangpoundulary">Source on GitHub</a></p>
-      </footer>
-    </div>
+          <a href="https://github.com/NicholaiVogel/bangpoundulary/issues/new">Submit a Wombo</a>
+        </section>
+        <section>
+          <h2>About</h2>
+          <a href="/about/">The Institute</a>
+          <a href="/search.json">Search JSON</a>
+        </section>
+      </div>
+    </footer>
   </body>
 </html>

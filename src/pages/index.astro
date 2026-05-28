@@ -3,41 +3,72 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SearchBox from '../components/SearchBox.astro';
 import { getEntries } from '../lib/entries';
 const entries = getEntries();
-const counts = entries.reduce((acc, entry) => {
-  acc[entry.status] = (acc[entry.status] ?? 0) + 1;
-  return acc;
-}, {} as Record<string, number>);
-const random = entries[Math.floor(entries.length / 2)];
+const featuredSlugs = ['wombasticalsideye', 'bangpoundulary', 'capquiche', 'scrollgorithm'];
+const featured = featuredSlugs.map((slug) => entries.find((entry) => entry.slug === slug)).filter(Boolean).slice(0, 4);
+const fallback = entries.slice(0, 4 - featured.length);
+const cards = [...featured, ...fallback];
+const categories = [
+  ['Culture', 'Institutional nonsense', entries.filter((e) => /kirk|obama|trump|culture|bro/i.test(`${e.word} ${e.definition}`)).length, '⌘'],
+  ['Internet', 'Terminally online forms', entries.filter((e) => /scroll|ai|meme|internet|discord|rizz/i.test(`${e.word} ${e.definition}`)).length, '◌'],
+  ['Work', 'Operational pathology', entries.filter((e) => /pr|review|logistic|operation|workflow|method/i.test(`${e.word} ${e.definition}`)).length, '▦'],
+  ['Food', 'Quiche-adjacent filings', entries.filter((e) => /quiche|food|brunch|snack|delicious/i.test(`${e.word} ${e.definition}`)).length, '◍'],
+  ['Social', 'Dominance and vibes', entries.filter((e) => /mog|bro|social|influence|rizz/i.test(`${e.word} ${e.definition}`)).length, '◇'],
+];
 ---
-<BaseLayout description="The official dictionary of valid wombos, linguistic sacrifice, and court-admissible nonsense.">
-  <section class="hero official-card">
-    <p class="eyebrow">Bangpoundulary.com · Department of Applied Wombology</p>
-    <h1>The official dictionary of words that had no business surviving.</h1>
-    <p class="lede">A searchable public record of valid wombos, linguistic sacrifices, deprecated appeals, variants, and court-admissible nonsense.</p>
-    <div class="hero-actions">
-      <a class="button primary" href="/entries/">Browse the record</a>
-      <a class="button" href="/law/">Read Wombo Law</a>
+<BaseLayout description="The official dictionary of wombos: word + combos, linguistic sacrifice, and court-admissible nonsense.">
+  <section class="hero-reference">
+    <div class="hero-copy">
+      <p class="section-kicker">The official dictionary of wombos</p>
+      <h1>The official dictionary of wombos.</h1>
+      <p class="hero-subtitle">A living reference for <em>word + combos</em>, linguistic sacrifice, and court-admissible nonsense.</p>
+      <SearchBox entries={entries} compact />
     </div>
-    <dl class="docket-grid">
-      <div><dt>{entries.length}</dt><dd>admitted records</dd></div>
-      <div><dt>{counts.valid ?? 0}</dt><dd>valid findings</dd></div>
-      <div><dt>{counts.deprecated ?? 0}</dt><dd>deprecated forms</dd></div>
-      <div><dt>{counts.variant ?? 0}</dt><dd>recognized variants</dd></div>
-    </dl>
   </section>
-  <SearchBox entries={entries} />
-  <section class="two-col">
-    <article class="official-card">
-      <p class="eyebrow">Wombo Law #1</p>
-      <h2>No sacrifice, no wombo.</h2>
-      <p>A wombo is not a concatenation. It is a merger. Each root must surrender a syllable, a meaning, or a boundary to create something that neither word could be alone.</p>
-      <a href="/law/">View the governing statute</a>
-    </article>
-    <article class="official-card specimen">
-      <p class="eyebrow">Specimen record</p>
-      <h2>{random.word}</h2>
-      <p>{random.definition}</p>
-      <a href={`/entries/${random.slug}/`}>Inspect the filing</a>
-    </article>
+
+  <section class="home-section">
+    <div class="section-heading">
+      <p class="section-kicker">Recently admitted</p>
+      <h2>Featured wombos</h2>
+      <a href="/entries/">Browse all {entries.length}</a>
+    </div>
+    <div class="featured-grid">
+      {cards.map((entry) => entry && (
+        <a class="wombo-card" href={`/entries/${entry.slug}/`}>
+          <div class="card-topline"><span class={`pill pill-${entry.status}`}>{entry.status}</span><span class="bookmark">♡</span></div>
+          <h3>{entry.word}</h3>
+          <p class="pronunciation">/{entry.slug.replaceAll('-', '·')}/ · {entry.roots.join(' + ')}</p>
+          <p>{entry.definition}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="home-section">
+    <div class="section-heading">
+      <p class="section-kicker">Index divisions</p>
+      <h2>Browse categories</h2>
+    </div>
+    <div class="category-grid">
+      {categories.map(([name, desc, count, icon]) => (
+        <a class="category-card" href="/categories/">
+          <span class="category-icon">{icon}</span>
+          <strong>{name}</strong>
+          <span>{desc}</span>
+          <small>{count} wombos</small>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="home-section process-section">
+    <div class="section-heading centered">
+      <p class="section-kicker">Methodology</p>
+      <h2>How wombos work</h2>
+    </div>
+    <div class="process-grid">
+      <article><span>1</span><h3>Combine roots</h3><p>Start with two or more source words that should not have been left unsupervised.</p></article>
+      <article><span>2</span><h3>Demand sacrifice</h3><p>Each root must surrender sound, meaning, boundary, or dignity. No sacrifice, no wombo.</p></article>
+      <article><span>3</span><h3>Admit the record</h3><p>Valid findings enter the Bangpoundulary with source, status, and evidentiary notes.</p></article>
+    </div>
   </section>
 </BaseLayout>

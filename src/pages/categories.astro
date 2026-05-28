@@ -1,0 +1,36 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getEntries } from '../lib/entries';
+const entries = getEntries();
+const categories = [
+  ['Culture', 'Institutional nonsense, political morphology, bro jurisprudence', /kirk|obama|trump|culture|bro/i],
+  ['Internet', 'Terminally online language, AI flow, scrolling, rizz, meme weather', /scroll|ai|meme|internet|discord|rizz|serotonin/i],
+  ['Work', 'Operational pathology, logistics, review, method, and procedural damage', /pr|review|logistic|operation|workflow|method|computation/i],
+  ['Food', 'Quiche, brunch, snacks, flavor, and edible comprehension', /quiche|food|brunch|snack|delicious|capiche/i],
+  ['Social', 'Mogging, influence, bro-state dynamics, dominance, and vibes', /mog|bro|social|influence|rizz|beta|alpha/i],
+];
+---
+<BaseLayout title="Categories" description="Browse Bangpoundulary entries by institutional category.">
+  <section class="page-heading">
+    <p class="section-kicker">Index divisions</p>
+    <h1>Categories</h1>
+    <p>Loose editorial shelves for a corpus that should not technically exist.</p>
+  </section>
+  <section class="category-directory">
+    {categories.map(([name, desc, pattern]) => {
+      const matches = entries.filter((entry) => (pattern as RegExp).test(`${entry.word} ${entry.definition} ${entry.roots.join(' ')}`)).slice(0, 6);
+      return (
+        <article class="category-panel">
+          <header>
+            <h2>{name}</h2>
+            <p>{desc}</p>
+            <strong>{matches.length} sampled filings</strong>
+          </header>
+          <ul>
+            {matches.map((entry) => <li><a href={`/entries/${entry.slug}/`}>{entry.word}</a><span>{entry.status}</span></li>)}
+          </ul>
+        </article>
+      );
+    })}
+  </section>
+</BaseLayout>
