@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Wombology Dictionary Entry",
+  "type": "object",
+  "required": [
+    "word",
+    "roots",
+    "status"
+  ],
+  "properties": {
+    "word": {
+      "type": "string",
+      "minLength": 1
+    },
+    "author": {
+      "type": "string"
+    },
+    "entry": {
+      "type": [
+        "integer",
+        "string"
+      ]
+    },
+    "roots": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "minItems": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "proposed",
+        "valid",
+        "codified",
+        "challenged",
+        "falsified",
+        "overruled",
+        "deprecated",
+        "variant"
+      ]
+    },
+    "see_also": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "source": {
+      "type": "string"
+    }
+  }
+}
