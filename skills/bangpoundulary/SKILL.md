@@ -42,13 +42,13 @@ Do not use for ordinary wordplay unless the user frames it as Wombology, wombos,
 Local path:
 
 ```text
-/mnt/work/dev/personal-projects/wombology-dictionary
+/mnt/work/dev/personal-projects/bangpoundulary
 ```
 
 Remote:
 
 ```text
-https://github.com/NicholaiVogel/wombology-dictionary
+https://github.com/NicholaiVogel/bangpoundulary
 ```
 
 Use this for collaborative Ant/Yogurt/Avery work, repo-backed entries, validation, CI, portable skills, PRs, and generated indexes.
@@ -99,7 +99,7 @@ Pure concatenations are not valid unless the court explicitly preserves them as 
 1. Pull first:
 
 ```bash
-cd /mnt/work/dev/personal-projects/wombology-dictionary
+cd /mnt/work/dev/personal-projects/bangpoundulary
 git pull --ff-only
 ```
 
@@ -225,7 +225,7 @@ When entering a Wombology session:
 1. Check repo state:
 
 ```bash
-cd /mnt/work/dev/personal-projects/wombology-dictionary
+cd /mnt/work/dev/personal-projects/bangpoundulary
 git status --short
 git pull --ff-only
 ```
