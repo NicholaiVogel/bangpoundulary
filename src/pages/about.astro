@@ -2,11 +2,22 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 <BaseLayout title="About" description="What the Bangpoundulary is and why it has paperwork.">
-  <section class="official-card about-page">
-    <p class="eyebrow">Institutional background</p>
-    <h1>About the Bangpoundulary</h1>
-    <p>The Bangpoundulary is the public dictionary of Wombology, a discipline devoted to word-combos that become something stranger than their roots intended.</p>
-    <p>It began in Discord, acquired case law, developed rival institutes, gained CI, and now exists as a searchable public record because the bit crossed the infrastructure event horizon.</p>
-    <p>The site is generated from Markdown entries in the public GitHub repo. Each entry preserves roots, status, sacrifice analysis, source provenance, and, when available, original corpus blocks.</p>
+  <section class="page-intro about-intro">
+    <p class="section-kicker">Institutional background</p>
+    <h1>About</h1>
+    <p>The Bangpoundulary is the public dictionary of Wombology: word-combos that become stranger than their source words intended.</p>
+  </section>
+
+  <section class="about-grid">
+    <article class="about-statement">
+      <h2>A bit with infrastructure.</h2>
+      <p>It began in Discord, acquired case law, gained CI, and now exists as a searchable public record because the bit crossed the infrastructure event horizon.</p>
+      <p>The site is generated from Markdown entries in the public GitHub repo. Each entry preserves roots, status, sacrifice analysis, source provenance, and original corpus blocks when available.</p>
+    </article>
+    <aside class="about-facts" aria-label="Bangpoundulary facts">
+      <div><strong>Source</strong><span>Markdown entries</span></div>
+      <div><strong>Validation</strong><span>Wombo Law #1</span></div>
+      <div><strong>Hosting</strong><span>Static Astro site</span></div>
+    </aside>
   </section>
 </BaseLayout>

@@ -3,22 +3,31 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SearchBox from '../components/SearchBox.astro';
 import { getEntries } from '../lib/entries';
 const entries = getEntries();
-const featuredSlugs = ['wombasticalsideye', 'bangpoundulary', 'capquiche', 'scrollgorithm'];
+const featuredSlugs = ['wombasticalsideye', 'bangpoundulary', 'capquiche', 'yogant'];
 const featured = featuredSlugs.map((slug) => entries.find((entry) => entry.slug === slug)).filter(Boolean).slice(0, 4);
 const fallback = entries.slice(0, 4 - featured.length);
 const cards = [...featured, ...fallback];
 const categoryDefs = [
-  ['Culture', /kirk|obama|trump|culture|bro|mog|rizz/i, 'people'],
-  ['Internet', /scroll|ai|meme|internet|discord|terminal|posting/i, 'target'],
-  ['Work', /pr|review|logistic|operation|workflow|method|office/i, 'work'],
-  ['Food', /quiche|food|brunch|snack|delicious|egg/i, 'food'],
-  ['Social', /mog|bro|social|influence|rizz|sideye|friend/i, 'phone'],
+  ['Culture', /kirk|obama|trump|culture|bro|mog|rizz/i, 'ph-users'],
+  ['Internet', /scroll|ai|meme|internet|discord|terminal|posting/i, 'ph-target'],
+  ['Work', /pr|review|logistic|operation|workflow|method|office/i, 'ph-selection'],
+  ['Food', /quiche|food|brunch|snack|delicious|egg/i, 'ph-bowl-steam'],
+  ['Social', /mog|bro|social|influence|rizz|sideye|friend/i, 'ph-phone'],
 ];
 const categories = categoryDefs.map(([name, re, icon]) => ({
   name,
   icon,
   count: entries.filter((entry) => re.test(`${entry.word} ${entry.definition} ${entry.roots.join(' ')}`)).length,
 }));
+const cleanText = (value = '') => String(value)
+  .replace(/[—–]/g, '-')
+  .replace(/\s+/g, ' ')
+  .replace(/^n\.\s*/i, '')
+  .trim();
+const excerpt = (value = '', max = 155) => {
+  const text = cleanText(value);
+  return text.length > max ? `${text.slice(0, max).trim()}...` : text;
+};
 const tagClass = (value = '') => {
   const text = String(value).toLowerCase();
   if (/food|quiche|snack|brunch|egg/.test(text)) return 'tag-food';
@@ -26,37 +35,50 @@ const tagClass = (value = '') => {
   if (/scroll|meme|ai|discord|terminal|internet/.test(text)) return 'tag-internet';
   return 'tag-culture';
 };
+const heroEntry = cards[0];
+const supportingCards = cards.slice(1);
 ---
 <BaseLayout description="The official dictionary of wombos: word + combos, linguistic sacrifice, and court-admissible nonsense.">
   <section class="hero-reference">
     <div class="hero-illustration" aria-hidden="true"></div>
     <div class="hero-copy">
-      <h1>The official dictionary of wombos</h1>
-      <p class="hero-subtitle">A living reference for <em>word + combos.</em></p>
+      <h1>Bangpoundulary</h1>
+      <p class="hero-subtitle">The official dictionary of <em>word + combos.</em></p>
       <SearchBox entries={entries} compact />
       <p class="hero-learn">New here? <a href="/about/">Learn what wombos are.</a></p>
     </div>
   </section>
 
   <section class="home-section featured-section">
-    <div class="section-heading">
+    <div class="section-heading stack-heading">
       <h2>Featured wombos</h2>
       <a href="/entries/">View all wombos →</a>
     </div>
-    <div class="featured-grid">
-      {cards.map((entry) => entry && (
-        <a class="wombo-card" href={`/entries/${entry.slug}/`}>
-          <span class="bookmark" aria-hidden="true">▱</span>
-          <h3>{entry.word}</h3>
-          <p class="pronunciation">/{entry.slug.replaceAll('-', '·')}/ <span>{entry.roots.length > 1 ? 'noun' : entry.status}</span></p>
-          <p class="definition-preview">{entry.definition}</p>
+    <div class="featured-composition">
+      {heroEntry && (
+        <a class="wombo-card wombo-card-large" href={`/entries/${heroEntry.slug}/`}>
+          <span class="record-label">Admitted record</span>
+          <h3>{heroEntry.word}</h3>
+          <p class="pronunciation">/{heroEntry.slug.replaceAll('-', '·')}/ <span>{heroEntry.roots.slice(0, 3).join(' + ')}</span></p>
+          <p class="definition-preview">{excerpt(heroEntry.definition, 230)}</p>
           <div class="tag-row">
-            {(entry.roots.length ? entry.roots : [entry.status, 'culture']).slice(0, 2).map((root) => (
+            {(heroEntry.roots.length ? heroEntry.roots : [heroEntry.status]).slice(0, 3).map((root) => (
               <span class={`entry-tag ${tagClass(root)}`}>{root}</span>
             ))}
           </div>
         </a>
-      ))}
+      )}
+      <div class="wombo-card-stack">
+        {supportingCards.map((entry) => entry && (
+          <a class="wombo-card wombo-card-compact" href={`/entries/${entry.slug}/`}>
+            <div>
+              <h3>{entry.word}</h3>
+              <p class="pronunciation">/{entry.slug.replaceAll('-', '·')}/</p>
+            </div>
+            <p class="definition-preview">{excerpt(entry.definition, 118)}</p>
+          </a>
+        ))}
+      </div>
     </div>
   </section>
 
@@ -68,23 +90,7 @@ const tagClass = (value = '') => {
     <div class="category-grid">
       {categories.map((category) => (
         <a class="category-card" href="/categories/">
-          <span class={`category-icon icon-${category.icon}`} aria-hidden="true">
-            {category.icon === 'people' && (
-              <svg viewBox="0 0 48 48"><circle cx="18" cy="17" r="7"></circle><circle cx="31" cy="18" r="6"></circle><path d="M6 39c2.4-8 6.6-12 12.4-12 5.5 0 9.4 4 11.6 12"></path><path d="M24 39c1.8-6.2 5.1-9.2 9.8-9.2 4.2 0 7.2 3 8.8 9.2"></path></svg>
-            )}
-            {category.icon === 'target' && (
-              <svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="17"></circle><circle cx="24" cy="24" r="10"></circle><circle cx="24" cy="24" r="3"></circle></svg>
-            )}
-            {category.icon === 'work' && (
-              <svg viewBox="0 0 48 48"><rect x="10" y="10" width="28" height="28" rx="4"></rect><rect x="18" y="18" width="12" height="12" rx="2"></rect></svg>
-            )}
-            {category.icon === 'food' && (
-              <svg viewBox="0 0 48 48"><path d="M13 27h22c-.8 7-4.5 11-11 11s-10.2-4-11-11Z"></path><path d="M16 23c0-4 3-4 3-8"></path><path d="M24 23c0-4 3-4 3-8"></path><path d="M32 23c0-4 3-4 3-8"></path></svg>
-            )}
-            {category.icon === 'phone' && (
-              <svg viewBox="0 0 48 48"><path d="M17 12c8 3 13 8 16 16l-5 5c-7-3-12-8-16-16l5-5Z"></path><path d="M17 12l3 8"></path><path d="M28 28l5 0"></path></svg>
-            )}
-          </span>
+          <span class="category-icon" aria-hidden="true"><i class={`ph ${category.icon}`}></i></span>
           <strong>{category.name}</strong>
           <small>{category.count} wombos</small>
         </a>
@@ -92,12 +98,20 @@ const tagClass = (value = '') => {
     </div>
   </section>
 
+  <section class="home-section law-strip">
+    <div>
+      <h2>No sacrifice, no wombo.</h2>
+      <p>Every admitted entry must show what each source word surrendered and what new meaning emerged.</p>
+    </div>
+    <a href="/law/">Read Wombo Law →</a>
+  </section>
+
   <section class="home-section process-block">
     <h2>How wombos work</h2>
     <div class="process-grid">
-      <article><span class="step-number">1</span><div><span class="step-icon" aria-hidden="true">⌂</span><h3>Words meet</h3><p>Two or more words collide.</p></div></article>
-      <article><span class="step-number">2</span><div><span class="step-icon" aria-hidden="true">✦</span><h3>Meaning emerges</h3><p>A new idea, feeling, or phenomenon is born.</p></div></article>
-      <article><span class="step-number">3</span><div><span class="step-icon" aria-hidden="true">✎</span><h3>Defined for all</h3><p>We define it, tag it, and add it to the living dictionary.</p></div></article>
+      <article><span class="step-number">1</span><div><span class="step-icon ph ph-intersect" aria-hidden="true"></span><h3>Words meet</h3><p>Two or more words collide.</p></div></article>
+      <article><span class="step-number">2</span><div><span class="step-icon ph ph-sparkle" aria-hidden="true"></span><h3>Meaning emerges</h3><p>A new idea, feeling, or phenomenon is born.</p></div></article>
+      <article><span class="step-number">3</span><div><span class="step-icon ph ph-notebook" aria-hidden="true"></span><h3>Defined for all</h3><p>We define it, tag it, and add it to the living dictionary.</p></div></article>
     </div>
   </section>
 </BaseLayout>

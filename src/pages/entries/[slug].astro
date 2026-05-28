@@ -7,14 +7,16 @@ export function getStaticPaths() {
 }
 const entry = getEntry(Astro.params.slug!);
 if (!entry) return Astro.redirect('/entries/');
+const cleanText = (value = '') => String(value).replace(/[\u2014\u2013]/g, '-');
+const cleanHtml = (value = '') => markdownBlocks(cleanText(value));
 ---
-<BaseLayout title={entry.word} description={entry.definition}>
+<BaseLayout title={entry.word} description={cleanText(entry.definition)}>
   <article class="entry-page official-card">
     <a class="back-link" href="/entries/">← Back to entries</a>
     <header class="entry-header">
       <span class={`status status-${entry.status}`}>{entry.status}</span>
       <h1>{entry.word}</h1>
-      <p class="definition">{entry.definition}</p>
+      <p class="definition">{cleanText(entry.definition)}</p>
     </header>
     <section class="filing-grid">
       <div><strong>Roots</strong><span>{entry.roots.join(' + ') || 'Under review'}</span></div>
@@ -24,16 +26,16 @@ if (!entry) return Astro.redirect('/entries/');
     </section>
     <section>
       <h2>Sacrifice</h2>
-      <div class="prose" set:html={markdownBlocks(entry.sacrifice || 'No explicit sacrifice analysis was recorded. The court invites review.')} />
+      <div class="prose" set:html={cleanHtml(entry.sacrifice || 'No explicit sacrifice analysis was recorded. The court invites review.')} />
     </section>
     <section>
       <h2>Law</h2>
-      <div class="prose" set:html={markdownBlocks(entry.law || 'No ruling recorded.')} />
+      <div class="prose" set:html={cleanHtml(entry.law || 'No ruling recorded.')} />
     </section>
     {entry.original && (
       <section>
         <h2>Original corpus block</h2>
-        <pre class="corpus-block">{entry.original.replace(/^```markdown\n?/, '').replace(/```$/, '').trim()}</pre>
+        <pre class="corpus-block">{cleanText(entry.original.replace(/^```markdown\n?/, '').replace(/```$/, '').trim())}</pre>
       </section>
     )}
   </article>

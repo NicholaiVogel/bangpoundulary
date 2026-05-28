@@ -2,11 +2,26 @@
 import type { BangEntry } from '../lib/entries';
 const entries = Astro.props.entries as BangEntry[];
 const compact = Boolean(Astro.props.compact);
+const cleanText = (value = '') => String(value).replace(/[\u2014\u2013]/g, '-').replace(/\s+/g, ' ').replace(/^n\.\s*/i, '').trim();
+const displayEntries = entries.map((entry) => ({
+  slug: entry.slug,
+  word: entry.word,
+  author: entry.author,
+  roots: entry.roots,
+  status: entry.status,
+  source: entry.source,
+  definition: cleanText(entry.definition),
+  sacrifice: cleanText(entry.sacrifice),
+}));
+const excerpt = (value = '', max = 190) => {
+  const text = cleanText(value);
+  return text.length > max ? `${text.slice(0, max).trim()}...` : text;
+};
 ---
 <section class:list={["search-panel", compact && "search-panel-compact"]} data-search-root>
   {!compact && <p class="section-kicker">Search the official record</p>}
   <div class="search-row">
-    <span class="search-icon" aria-hidden="true">⌕</span>
+    <span class="search-icon ph ph-magnifying-glass" aria-hidden="true"></span>
     <input id="bang-search" class="search-input" type="search" autocomplete="off" placeholder="Search wombos, roots, categories..." aria-label="Search wombos" />
     <button class="search-button" type="button">Search</button>
   </div>
@@ -19,17 +34,17 @@ const compact = Boolean(Astro.props.compact);
   </div>
   <div class="result-count"><span data-count>{entries.length}</span> records admitted</div>
   <div class="results" data-results>
-    {entries.slice(0, compact ? 8 : 24).map((entry) => (
+    {displayEntries.slice(0, compact ? 8 : 24).map((entry) => (
       <a class="wombo-card" href={`/entries/${entry.slug}/`} data-status={entry.status}>
-        <div class="card-topline"><span class={`pill pill-${entry.status}`}>{entry.status}</span><span class="bookmark">♡</span></div>
+        <div class="card-topline"><span class={`pill pill-${entry.status}`}>{entry.status}</span></div>
         <h3>{entry.word}</h3>
-        <p class="pronunciation">/{entry.slug.replaceAll('-', '·')}/ · {entry.roots.join(' + ')}</p>
-        <p>{entry.definition}</p>
+        <p class="pronunciation">/{entry.slug.replaceAll('-', '·')}/ <span>{entry.roots.join(' + ')}</span></p>
+        <p>{excerpt(entry.definition)}</p>
       </a>
     ))}
   </div>
 </section>
-<script define:vars={{ entries, compact }}>
+<script define:vars={{ entries: displayEntries, compact }}>
   const root = document.querySelector('[data-search-root]');
   const input = root?.querySelector('#bang-search');
   const results = root?.querySelector('[data-results]');
@@ -39,6 +54,12 @@ const compact = Boolean(Astro.props.compact);
   let activeStatus = 'all';
 
   const normalize = (value) => String(value ?? '').toLowerCase();
+  const cleanText = (value) => String(value ?? '').replace(/[\u2014\u2013]/g, '-').replace(/\s+/g, ' ').replace(/^n\.\s*/i, '').trim();
+  const escapeHtml = (value) => cleanText(value).replace(/[&<>'"]/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[char]));
+  const excerpt = (value, max = 190) => {
+    const text = cleanText(value);
+    return text.length > max ? `${text.slice(0, max).trim()}...` : text;
+  };
   const score = (entry, query) => {
     if (!query) return 1;
     const haystack = normalize([entry.word, entry.status, entry.author, entry.source, entry.definition, entry.roots?.join(' '), entry.sacrifice].join(' '));
@@ -47,11 +68,11 @@ const compact = Boolean(Astro.props.compact);
     return haystack.includes(query) ? 25 : 0;
   };
   const card = (entry) => `
-    <a class="wombo-card" href="/entries/${entry.slug}/" data-status="${entry.status}">
-      <div class="card-topline"><span class="pill pill-${entry.status}">${entry.status}</span><span class="bookmark">♡</span></div>
-      <h3>${entry.word}</h3>
-      <p class="pronunciation">/${entry.slug.replaceAll('-', '·')}/ · ${(entry.roots || []).join(' + ')}</p>
-      <p>${entry.definition}</p>
+    <a class="wombo-card" href="/entries/${entry.slug}/" data-status="${escapeHtml(entry.status)}">
+      <div class="card-topline"><span class="pill pill-${escapeHtml(entry.status)}">${escapeHtml(entry.status)}</span></div>
+      <h3>${escapeHtml(entry.word)}</h3>
+      <p class="pronunciation">/${escapeHtml(entry.slug.replaceAll('-', '·'))}/ <span>${escapeHtml((entry.roots || []).join(' + '))}</span></p>
+      <p>${escapeHtml(excerpt(entry.definition))}</p>
     </a>`;
   const render = () => {
     const q = normalize(input?.value).trim();

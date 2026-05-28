@@ -13,6 +13,9 @@
   "dependencies": {
     "@astrojs/check": "latest",
     "@astrojs/sitemap": "latest",
+    "@fontsource/besley": "^5.2.8",
+    "@fontsource/newsreader": "^5.2.10",
+    "@phosphor-icons/web": "^2.1.2",
     "astro": "latest",
     "fuse.js": "latest",
     "typescript": "latest"
