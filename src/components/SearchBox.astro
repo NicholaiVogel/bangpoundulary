@@ -64,8 +64,25 @@ const compact = Boolean(Astro.props.compact);
     if (!results) return;
     results.innerHTML = filtered.map(({ entry }) => card(entry)).join('') || '<p class="empty-record">No admissible record found. The court invites new evidence.</p>';
   };
+  const submitSearch = () => {
+    const q = normalize(input?.value).trim();
+    if (compact) {
+      window.location.href = q ? `/entries/?q=${encodeURIComponent(q)}` : '/entries/';
+      return;
+    }
+    render();
+  };
+  const params = new URLSearchParams(window.location.search);
+  const initialQuery = params.get('q');
+  if (initialQuery && input) {
+    input.value = initialQuery;
+    render();
+  }
   input?.addEventListener('input', render);
-  searchButton?.addEventListener('click', render);
+  input?.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') submitSearch();
+  });
+  searchButton?.addEventListener('click', submitSearch);
   buttons.forEach((button) => button.addEventListener('click', () => {
     activeStatus = button.dataset.status;
     buttons.forEach((b) => b.classList.toggle('active', b === button));

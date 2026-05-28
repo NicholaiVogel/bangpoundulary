@@ -11,7 +11,7 @@ const path = Astro.url.pathname;
   <body>
     <header class="site-header">
       <a class="brand" href="/" aria-label="Bangpoundulary home">
-        <img class="brand-logo" src="/assets/bangpoundulary-logo.png" alt="" />
+        <img class="brand-logo" src="/assets/bangpoundulary-logo-transparent.png" alt="" />
         <span class="brand-text">bangpoundulary.com</span>
       </a>
       <nav class="site-nav" aria-label="Primary navigation">
@@ -25,25 +25,37 @@ const path = Astro.url.pathname;
     <main><slot /></main>
     <footer class="site-footer">
       <div>
-        <a class="footer-brand" href="/"><img class="brand-logo" src="/assets/bangpoundulary-logo.png" alt="" /><span>bangpoundulary.com</span></a>
-        <p>The official dictionary of wombos, maintained by the Office of Wombological Records.</p>
+        <a class="footer-brand" href="/"><img class="brand-logo" src="/assets/bangpoundulary-logo-transparent.png" alt="" /><span>bangpoundulary.com</span></a>
+        <p>The official dictionary of wombos<br />(word + combos).</p>
+        <p>© 2026 Bangpoundulary.com</p>
       </div>
       <div class="footer-grid">
         <section>
           <h2>Explore</h2>
           <a href="/entries/">Browse Wombos</a>
-          <a href="/law/">Wombo Law</a>
+          <a href="/categories/">Categories</a>
           <a href="/corpus/">Corpus</a>
         </section>
         <section>
           <h2>Contribute</h2>
-          <a href="https://github.com/NicholaiVogel/bangpoundulary">GitHub</a>
           <a href="https://github.com/NicholaiVogel/bangpoundulary/issues/new">Submit a Wombo</a>
+          <a href="/law/">Editorial Guidelines</a>
+          <a href="https://github.com/NicholaiVogel/bangpoundulary">GitHub</a>
         </section>
         <section>
           <h2>About</h2>
-          <a href="/about/">The Institute</a>
+          <a href="/about/">About Bangpoundulary</a>
+          <a href="/law/">Our Principles</a>
           <a href="/search.json">Search JSON</a>
+        </section>
+        <section>
+          <h2>Follow</h2>
+          <div class="social-row" aria-label="Social links">
+            <a href="https://github.com/NicholaiVogel/bangpoundulary" aria-label="GitHub">G</a>
+            <a href="/corpus/" aria-label="Corpus">C</a>
+            <a href="/law/" aria-label="Law">§</a>
+          </div>
+          <p>Made with words. For everyone.</p>
         </section>
       </div>
     </footer>
