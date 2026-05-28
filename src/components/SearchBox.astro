@@ -17,6 +17,9 @@ const excerpt = (value = '', max = 190) => {
   const text = cleanText(value);
   return text.length > max ? `${text.slice(0, max).trim()}...` : text;
 };
+const pageSize = 24;
+const initialEntries = displayEntries.slice(0, compact ? 8 : pageSize);
+const initialPageCount = Math.max(1, Math.ceil(displayEntries.length / pageSize));
 ---
 <section class:list={["search-panel", compact && "search-panel-compact"]} data-search-root>
   {!compact && <p class="section-kicker">Search the official record</p>}
@@ -34,24 +37,38 @@ const excerpt = (value = '', max = 190) => {
   </div>
   <div class="result-count"><span data-count>{entries.length}</span> records admitted</div>
   <div class="results" data-results>
-    {displayEntries.slice(0, compact ? 8 : 24).map((entry) => (
+    {initialEntries.map((entry) => (
       <a class="wombo-card" href={`/entries/${entry.slug}/`} data-status={entry.status}>
         <div class="card-topline"><span class={`pill pill-${entry.status}`}>{entry.status}</span></div>
-        <h3>{entry.word}</h3>
+        <h3 style={`--word-ch: ${entry.word.length}`}>{entry.word}</h3>
         <p class="pronunciation">/{entry.slug.replaceAll('-', '·')}/ <span>{entry.roots.join(' + ')}</span></p>
         <p>{excerpt(entry.definition)}</p>
       </a>
     ))}
   </div>
+  {!compact && (
+    <nav class="pagination" data-pagination aria-label="Entries pagination">
+      <button type="button" data-page-action="prev" disabled>Previous</button>
+      <span data-page-info>Page 1 of {initialPageCount}</span>
+      <button type="button" data-page-action="next" disabled={initialPageCount <= 1}>Next</button>
+    </nav>
+  )}
 </section>
-<script define:vars={{ entries: displayEntries, compact }}>
+<script is:inline define:vars={{ entries: displayEntries, compact, pageSize }}>
   const root = document.querySelector('[data-search-root]');
   const input = root?.querySelector('#bang-search');
   const results = root?.querySelector('[data-results]');
   const count = root?.querySelector('[data-count]');
   const buttons = Array.from(root?.querySelectorAll('[data-status]') ?? []);
   const searchButton = root?.querySelector('.search-button');
+  const pagination = root?.querySelector('[data-pagination]');
+  const pageInfo = root?.querySelector('[data-page-info]');
+  const prevButton = root?.querySelector('[data-page-action="prev"]');
+  const nextButton = root?.querySelector('[data-page-action="next"]');
   let activeStatus = 'all';
+  let currentPage = 1;
+  let filteredEntries = entries;
+  const scrollBehavior = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
 
   const normalize = (value) => String(value ?? '').toLowerCase();
   const cleanText = (value) => String(value ?? '').replace(/[\u2014\u2013]/g, '-').replace(/\s+/g, ' ').replace(/^n\.\s*/i, '').trim();
@@ -70,20 +87,40 @@ const excerpt = (value = '', max = 190) => {
   const card = (entry) => `
     <a class="wombo-card" href="/entries/${entry.slug}/" data-status="${escapeHtml(entry.status)}">
       <div class="card-topline"><span class="pill pill-${escapeHtml(entry.status)}">${escapeHtml(entry.status)}</span></div>
-      <h3>${escapeHtml(entry.word)}</h3>
+      <h3 style="--word-ch: ${String(entry.word ?? '').length}">${escapeHtml(entry.word)}</h3>
       <p class="pronunciation">/${escapeHtml(entry.slug.replaceAll('-', '·'))}/ <span>${escapeHtml((entry.roots || []).join(' + '))}</span></p>
       <p>${escapeHtml(excerpt(entry.definition))}</p>
     </a>`;
-  const render = () => {
+  const getFilteredEntries = () => {
     const q = normalize(input?.value).trim();
-    const filtered = entries
+    return entries
       .map((entry) => ({ entry, score: score(entry, q) }))
       .filter(({ entry, score }) => score > 0 && (activeStatus === 'all' || entry.status === activeStatus))
       .sort((a, b) => b.score - a.score || a.entry.word.localeCompare(b.entry.word))
-      .slice(0, compact ? 12 : 72);
-    if (count) count.textContent = String(filtered.length);
+      .map(({ entry }) => entry);
+  };
+  const updatePagination = () => {
+    if (compact || !pagination) return;
+    const totalPages = Math.max(1, Math.ceil(filteredEntries.length / pageSize));
+    currentPage = Math.min(Math.max(1, currentPage), totalPages);
+    pagination.hidden = filteredEntries.length <= pageSize;
+    if (pageInfo) pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+    if (prevButton) prevButton.disabled = currentPage <= 1;
+    if (nextButton) nextButton.disabled = currentPage >= totalPages;
+  };
+  const renderPage = () => {
+    if (count) count.textContent = String(filteredEntries.length);
     if (!results) return;
-    results.innerHTML = filtered.map(({ entry }) => card(entry)).join('') || '<p class="empty-record">No admissible record found. The court invites new evidence.</p>';
+    const visible = compact
+      ? filteredEntries.slice(0, 12)
+      : filteredEntries.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+    results.innerHTML = visible.map((entry) => card(entry)).join('') || '<p class="empty-record">No admissible record found. The court invites new evidence.</p>';
+    updatePagination();
+  };
+  const render = ({ resetPage = true } = {}) => {
+    filteredEntries = getFilteredEntries();
+    if (resetPage) currentPage = 1;
+    renderPage();
   };
   const submitSearch = () => {
     const q = normalize(input?.value).trim();
@@ -99,7 +136,7 @@ const excerpt = (value = '', max = 190) => {
     input.value = initialQuery;
     render();
   }
-  input?.addEventListener('input', render);
+  input?.addEventListener('input', () => render({ resetPage: true }));
   input?.addEventListener('keydown', (event) => {
     if (event.key === 'Enter') submitSearch();
   });
@@ -107,6 +144,17 @@ const excerpt = (value = '', max = 190) => {
   buttons.forEach((button) => button.addEventListener('click', () => {
     activeStatus = button.dataset.status;
     buttons.forEach((b) => b.classList.toggle('active', b === button));
-    render();
+    render({ resetPage: true });
   }));
+  prevButton?.addEventListener('click', () => {
+    currentPage -= 1;
+    renderPage();
+    root?.scrollIntoView({ behavior: scrollBehavior, block: 'start' });
+  });
+  nextButton?.addEventListener('click', () => {
+    currentPage += 1;
+    renderPage();
+    root?.scrollIntoView({ behavior: scrollBehavior, block: 'start' });
+  });
+  render({ resetPage: false });
 </script>

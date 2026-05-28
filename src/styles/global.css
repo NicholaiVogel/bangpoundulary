@@ -91,7 +91,14 @@ h3 { font-size: 1.34rem; line-height: 1.14; }
 .filters button { border: 1px solid var(--line); background: white; color: #577089; border-radius: 999px; padding: .45rem .75rem; font: 700 .78rem var(--sans); cursor: pointer; }
 .filters button.active { background: var(--navy); color: white; border-color: var(--navy); }
 .result-count { color: var(--muted); font-size: .9rem; margin-bottom: 1rem; }
-.search-panel-compact .filters, .search-panel-compact .result-count, .search-panel-compact .results { display: none; }
+.pagination { display: flex; align-items: center; justify-content: center; gap: .8rem; margin: 1.35rem auto 0; }
+.pagination[hidden] { display: none; }
+.pagination button { min-width: 104px; height: 40px; border: 1px solid var(--line); border-radius: 999px; background: #fff; color: var(--navy); font: 800 .86rem var(--sans); cursor: pointer; transition: transform .15s ease, border-color .15s ease, background .15s ease; }
+.pagination button:not(:disabled):hover { border-color: #b9c9d8; background: #f8fbfd; }
+.pagination button:not(:disabled):active { transform: translateY(1px); }
+.pagination button:disabled { cursor: not-allowed; color: #9badbf; background: #f7fafc; }
+.pagination span { min-width: 112px; color: var(--muted); font: 800 .84rem var(--sans); text-align: center; }
+.search-panel-compact .filters, .search-panel-compact .result-count, .search-panel-compact .results, .search-panel-compact .pagination { display: none; }
 
 .home-section, .page-heading, .entry-page, .statute, .about-page { width: min(1188px, calc(100% - 44px)); margin: 3.4rem auto; }
 .section-heading { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 1.15rem; }
@@ -127,7 +134,7 @@ h3 { font-size: 1.34rem; line-height: 1.14; }
 .pronunciation span { font-style: normal; font-family: var(--sans); font-size: .82rem; color: #8a9aab; }
 .definition-preview, .wombo-card p:not(.pronunciation) { color: #52677d; line-height: 1.52; margin: 0; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .wombo-card p { overflow-wrap: anywhere; }
-.wombo-card h3 { word-break: normal; }
+.results .wombo-card h3 { font-size: clamp(1.05rem, calc(120cqw / var(--word-ch, 12)), 1.34rem); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; word-break: normal; }
 .tag-row { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: auto; padding-top: 1rem; }
 .entry-tag, .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: .26rem .58rem; background: var(--blue-soft); color: #2d5b82; font: 700 .72rem var(--sans); text-transform: lowercase; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .pill { text-transform: capitalize; }
@@ -268,6 +275,9 @@ h3 { font-size: 1.34rem; line-height: 1.14; }
   .wombo-card-compact { min-height: 0; }
   .wombo-card-large h3, .wombo-card-compact h3 { white-space: normal; overflow-wrap: break-word; text-overflow: clip; }
   .category-panel-refined header { grid-template-columns: 1fr; }
+  .pagination { justify-content: space-between; gap: .55rem; }
+  .pagination button { min-width: 86px; padding: 0 .75rem; }
+  .pagination span { min-width: 0; font-size: .78rem; }
   .category-sample-list { grid-template-columns: 1fr; }
   .category-sample-list a { border-right: 0; border-bottom: 1px solid var(--line-soft); }
   .process-grid::before { display: none; }
