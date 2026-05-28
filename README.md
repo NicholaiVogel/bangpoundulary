@@ -14,8 +14,7 @@ dictionary/index.md      Generated dictionary index
 corpus/                  Imported historical compendia and source snapshots
 schemas/                 Machine-readable entry schema
 scripts/                 Validation and index-building tools
-skills/wombology/        Shared repo-native Wombology skill
-skills/wombos-scribe/    Imported Ant live-scribing skill and references
+skills/bangpoundulary/   Master skill combining repo maintenance, live scribing, Obsidian corpus work, and Ant/Yogurt reconciliation
 ```
 
 The Obsidian compendium is preserved as a corpus snapshot, and its attested entries are also split into per-word files for review, validation, PRs, and future agent collaboration.
