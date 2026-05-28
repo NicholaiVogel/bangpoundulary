@@ -67,7 +67,7 @@ main { min-height: 70vh; }
   pointer-events: none;
 }
 .hero-copy { position: relative; z-index: 1; width: min(760px, calc(100% - 40px)); margin: 0 auto; padding: 3.3rem 0 3rem; text-align: center; }
-h1, h2, h3 { margin: 0; color: var(--navy); font-family: var(--display); letter-spacing: -.034em; overflow-wrap: anywhere; }
+h1, h2, h3 { margin: 0; color: var(--navy); font-family: var(--display); letter-spacing: -.034em; overflow-wrap: break-word; }
 h1 { font-size: clamp(2.85rem, 5.15vw, 4.65rem); line-height: .96; }
 .hero-reference h1 { white-space: nowrap; }
 h2 { font-size: clamp(1.95rem, 3.5vw, 2.9rem); line-height: 1.03; }
@@ -114,19 +114,20 @@ h3 { font-size: 1.34rem; line-height: 1.14; }
   transition: transform .16s ease, box-shadow .16s ease, border-color .16s ease;
 }
 .wombo-card:hover { transform: translateY(-2px); border-color: #bbc9d8; box-shadow: var(--shadow); }
-.wombo-card-large { min-height: 360px; padding: 1.55rem; background: linear-gradient(145deg, #fff, #f8fbfd); }
+.wombo-card-large { min-height: 360px; padding: 1.55rem; background: linear-gradient(145deg, #fff, #f8fbfd); container-type: inline-size; }
 .record-label { color: #66798c; font: 800 .78rem var(--sans); letter-spacing: .08em; text-transform: uppercase; margin-bottom: auto; }
-.wombo-card-large h3 { font-size: clamp(1.9rem, 3.2vw, 2.95rem); line-height: .96; margin: 1.1rem 0 .65rem; overflow-wrap: normal; word-break: normal; hyphens: none; }
+.wombo-card-large h3 { font-size: clamp(1.72rem, calc(118cqw / var(--word-ch)), 2.95rem); line-height: 1; margin: 1.1rem 0 .65rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; word-break: normal; hyphens: none; }
 .wombo-card-stack { display: grid; gap: 1rem; }
-.wombo-card-compact { min-height: 0; display: grid; grid-template-columns: minmax(220px, .48fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
-.wombo-card-compact h3 { font-size: 1.18rem; margin-bottom: .28rem; overflow-wrap: normal; word-break: normal; hyphens: none; }
+.wombo-card-compact { min-height: 0; display: grid; grid-template-columns: minmax(0, .45fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+.word-cell { min-width: 0; container-type: inline-size; }
+.wombo-card-compact h3 { font-size: clamp(1rem, calc(128cqw / var(--word-ch)), 1.22rem); line-height: 1.05; margin-bottom: .28rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; word-break: normal; hyphens: none; }
 .card-topline { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
 .bookmark { position: absolute; top: 1rem; right: 1rem; color: #9aaabd; font-size: 1.15rem; }
 .pronunciation { margin: 0 0 .82rem; color: #7c8fa3; font: italic 500 .92rem var(--serif); padding-bottom: .04rem; }
 .pronunciation span { font-style: normal; font-family: var(--sans); font-size: .82rem; color: #8a9aab; }
 .definition-preview, .wombo-card p:not(.pronunciation) { color: #52677d; line-height: 1.52; margin: 0; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
 .wombo-card p { overflow-wrap: anywhere; }
-.wombo-card h3 { overflow-wrap: break-word; word-break: normal; }
+.wombo-card h3 { word-break: normal; }
 .tag-row { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: auto; padding-top: 1rem; }
 .entry-tag, .pill { display: inline-flex; align-items: center; border-radius: 999px; padding: .26rem .58rem; background: var(--blue-soft); color: #2d5b82; font: 700 .72rem var(--sans); text-transform: lowercase; max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
 .pill { text-transform: capitalize; }
@@ -178,10 +179,10 @@ h3 { font-size: 1.34rem; line-height: 1.14; }
 
 .page-heading { padding-top: 1rem; }
 .page-heading p, .about-page p, .statute p, .entry-page p { color: var(--muted); line-height: 1.6; }
-.entry-page { max-width: 920px; }
+.entry-page { max-width: 1080px; }
 .back-link { color: var(--muted); font-weight: 700; }
 .entry-header { margin: 1.5rem 0 2rem; }
-.entry-header h1 { font-size: clamp(3rem, 7vw, 6rem); }
+.entry-header h1 { font-size: clamp(2.45rem, 5vw, 4.55rem); line-height: .96; overflow-wrap: break-word; word-break: normal; hyphens: none; }
 .definition { font: 400 1.3rem/1.55 var(--serif); color: #486178; }
 .filing-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem; margin: 2rem 0; }
 .filing-grid div { border: 1px solid var(--line); border-radius: 14px; padding: .9rem; background: var(--soft); }
@@ -241,6 +242,7 @@ h3 { font-size: 1.34rem; line-height: 1.14; }
   .featured-composition { grid-template-columns: 1fr; }
   .wombo-card-stack { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .wombo-card-compact { display: flex; min-height: 210px; }
+  .wombo-card-compact h3 { font-size: clamp(1.05rem, 8vw, 1.22rem); }
   .results { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 920px) {
@@ -264,7 +266,7 @@ h3 { font-size: 1.34rem; line-height: 1.14; }
 @media (max-width: 640px) {
   .featured-composition, .wombo-card-stack, .featured-grid, .results, .process-grid { grid-template-columns: 1fr; }
   .wombo-card-compact { min-height: 0; }
-  .wombo-card-large h3, .wombo-card-compact h3 { overflow-wrap: anywhere; }
+  .wombo-card-large h3, .wombo-card-compact h3 { white-space: normal; overflow-wrap: break-word; text-overflow: clip; }
   .category-panel-refined header { grid-template-columns: 1fr; }
   .category-sample-list { grid-template-columns: 1fr; }
   .category-sample-list a { border-right: 0; border-bottom: 1px solid var(--line-soft); }

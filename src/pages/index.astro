@@ -7,7 +7,7 @@ const featuredSlugs = ['wombasticalsideye', 'bangpoundulary', 'capquiche', 'yoga
 const featured = featuredSlugs.map((slug) => entries.find((entry) => entry.slug === slug)).filter(Boolean).slice(0, 4);
 const fallback = entries.slice(0, 4 - featured.length);
 const cards = [...featured, ...fallback];
-const categoryDefs = [
+const categoryDefs: Array<[string, RegExp, string]> = [
   ['Culture', /kirk|obama|trump|culture|bro|mog|rizz/i, 'ph-users'],
   ['Internet', /scroll|ai|meme|internet|discord|terminal|posting/i, 'ph-target'],
   ['Work', /pr|review|logistic|operation|workflow|method|office/i, 'ph-selection'],
@@ -58,7 +58,7 @@ const supportingCards = cards.slice(1);
       {heroEntry && (
         <a class="wombo-card wombo-card-large" href={`/entries/${heroEntry.slug}/`}>
           <span class="record-label">Admitted record</span>
-          <h3>{heroEntry.word}</h3>
+          <h3 style={`--word-ch: ${heroEntry.word.length}`}>{heroEntry.word}</h3>
           <p class="pronunciation">/{heroEntry.slug.replaceAll('-', '·')}/ <span>{heroEntry.roots.slice(0, 3).join(' + ')}</span></p>
           <p class="definition-preview">{excerpt(heroEntry.definition, 230)}</p>
           <div class="tag-row">
@@ -71,8 +71,8 @@ const supportingCards = cards.slice(1);
       <div class="wombo-card-stack">
         {supportingCards.map((entry) => entry && (
           <a class="wombo-card wombo-card-compact" href={`/entries/${entry.slug}/`}>
-            <div>
-              <h3>{entry.word}</h3>
+            <div class="word-cell">
+              <h3 style={`--word-ch: ${entry.word.length}`}>{entry.word}</h3>
               <p class="pronunciation">/{entry.slug.replaceAll('-', '·')}/</p>
             </div>
             <p class="definition-preview">{excerpt(entry.definition, 118)}</p>

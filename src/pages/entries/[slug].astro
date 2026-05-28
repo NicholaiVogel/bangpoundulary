@@ -32,11 +32,5 @@ const cleanHtml = (value = '') => markdownBlocks(cleanText(value));
       <h2>Law</h2>
       <div class="prose" set:html={cleanHtml(entry.law || 'No ruling recorded.')} />
     </section>
-    {entry.original && (
-      <section>
-        <h2>Original corpus block</h2>
-        <pre class="corpus-block">{cleanText(entry.original.replace(/^```markdown\n?/, '').replace(/```$/, '').trim())}</pre>
-      </section>
-    )}
   </article>
 </BaseLayout>
